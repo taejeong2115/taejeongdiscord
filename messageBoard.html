@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Message Board">
+    <meta name="author" content="Your Name">
+    <title>메시지 작성</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="assets/css/dorang.css">
+    <style>
+        body {
+            background-color: rgb(126, 165, 175);
+        }
+       *,*::before,*::after{
+        color: black;
+       }
+    </style>
+</head>
+<body>
+     <!-- 페이지 상단 -->
+     <nav class="page-navbar" data-spy="affix" data-offset-top="10" >
+        <ul class="nav-navbar container">
+            <li class="nav-item"><a href="index.html" class="nav-link">홈</a></li>
+            <li class="nav-item"><a href="사건사고.html" class="nav-link">사건사고</a></li>
+            <li class="nav-item"><a href="활동.html" class="nav-link">우리들의 이야기</a></li>
+            <li class="nav-item"><a href="후원.html" class="nav-link">후원하기</a></li>
+            <li class="nav-item"><a href="messageBoard.html" class="nav-link">문의하기</a></li>
+        </ul>
+    </nav><!-- end of page navbar -->
+
+    <!-- 페이지 하단에 빈 공간 추가 -->
+    <footer style="height: 100px;">
+    </footer>
+
+    <div class="container">
+        <h2>태쫑이가 보고있다</h2>
+        <form id="messageForm">
+            <div class="form-group">
+                <label for="name">이름:</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="message">메시지:</label>
+                <textarea class="form-control" id="message" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-theme-color" style="float: right;">작성 완료</button>
+        </form>
+    </div>
+
+    <div class="container mt-5">
+        <h2>게시판</h2>
+        <div id="messageBoard"></div>
+    </div>
+
+    <script>
+        const messageForm = document.getElementById("messageForm");
+        const messageBoard = document.getElementById("messageBoard");
+
+        const messages = JSON.parse(localStorage.getItem("messages")) || [];
+
+        const displayMessages = () => {
+            messageBoard.innerHTML = '';
+            messages.forEach((messageData, index) => {
+                const msgElement = document.createElement("div");
+                msgElement.className = "card";
+
+                const date = new Date(messageData.time);
+                const formattedDate = date.toLocaleString();
+
+                msgElement.innerHTML = `
+                    <div class="card-body">
+                        <button class="btn btn-danger btn-xs" onclick="deleteMessage(${index})" style="float: right;">삭제</button>
+                        <h3 class="card-title">${messageData.name} <small class="text-muted">${formattedDate}</small></h3>
+                        <p class="card-text">${messageData.message}</p>
+                    </div>
+                `;
+                messageBoard.appendChild(msgElement);
+            });
+        };
+        displayMessages();
+
+        function deleteMessage(index) {
+            messages.splice(index, 1);
+            localStorage.setItem("messages", JSON.stringify(messages));
+            displayMessages();
+        }
+
+        messageForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const message = document.getElementById("message").value;
+            const time = new Date().getTime(); // 작성 시간
+
+            messages.push({ name, message, time });
+
+            localStorage.setItem("messages", JSON.stringify(messages));
+            displayMessages();
+
+            event.target.reset();
+        });
+    </script>
+</body>
+</html>
